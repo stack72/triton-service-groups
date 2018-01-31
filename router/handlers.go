@@ -3,16 +3,17 @@ package router
 import (
 	"net/http"
 
-	"github.com/jackc/pgx"
+	"github.com/joyent/triton-service-groups/session"
 )
 
-func isAuthenticated(dbPool *pgx.ConnPool, r *http.Request) bool {
+func isAuthenticated(session *session.TsgSession, r *http.Request) bool {
+	session.AccountId = "joyent"
 	return true
 }
 
-func AuthenticationHandler(dbPool *pgx.ConnPool, h http.Handler) http.Handler {
+func AuthenticationHandler(session *session.TsgSession, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !isAuthenticated(dbPool, r) {
+		if !isAuthenticated(session, r) {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
